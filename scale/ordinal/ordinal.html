@@ -14,8 +14,10 @@ body{
 <body>
 <script src="../../d3.js"></script>
 <script>
+//颜色
+let color=d3.scale.category20();
 //svg尺寸
-var margin = {top: 20, right: 40, bottom: 40, left: 20},
+var margin = {top: 20, right: 40, bottom: 40, left: 40},
     width = 500 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 //数据集
@@ -25,9 +27,12 @@ var linearScale=d3.scale.linear()
              .domain([0,d3.max(dataset,function(d){ return d.value;})])    
              .range([0,height]); 
 //序数比例尺
+let str=[];
+dataset.forEach(function(n,i){str.push(i*Math.floor(width/dataset.length)+40)});
+console.log(str)
 var ordinalScale  = d3.scale.ordinal()
 	.domain(dataset.map(function(d){ return d.key;}))
-    .range([0, 100,200,440]);
+    .rangeRoundPoints([0,width],1);
 //创建svg标签
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -40,11 +45,11 @@ var rects=svg.selectAll("rect")
 	.enter()
 	.append("rect")
 	.attr({
-		x:function(d){ return ordinalScale(d.key)+margin.left/2+5; },
+		x:function(d){ return ordinalScale(d.key)+35; },
 		y:function(d,i){ return height-linearScale(d.value); },	//矩形起始纵坐标
 		width:10,
 		height:function(d){ return linearScale(d.value); },	//矩形的条高
-		fill:function(d){ return "steelblue"; },
+		fill:function(d,i){ return color(i); },
 		stroke:'black',
 		'stroke-width':.5
 	});
@@ -55,13 +60,18 @@ var texts=svg.selectAll("text")
 	.append("text")
 	.text( function(d){ return d.value; })
 	.attr({
-		x:function(d){ return ordinalScale(d.key)+margin.left/2+5; },
+		x:function(d){ return ordinalScale(d.key)+35; },
 		y:function(d,i){ return height-linearScale(d.value); }
 	});
 //创建坐标轴
-svg.append("g")
- .attr("transform", "translate(" + margin.left + "," + height + ")")
+let xAxis=svg.append("g")
+ .attr("transform", "translate(" +40 + "," + height + ")")
     .attr("class", "x axis")
     .call(d3.svg.axis().scale(ordinalScale).orient("bottom"));
+	
+let yAxis=svg.append('g')
+ .attr('transform','translate('+margin.left+','+0+')')
+    .attr("class", "y axis")
+	.call(d3.svg.axis().scale(linearScale.range([height,0])).orient("left"));
 
 </script>

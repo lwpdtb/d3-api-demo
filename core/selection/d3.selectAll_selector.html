@@ -45,8 +45,211 @@
 				<td class="test">啤酒</td>
 			</tr>
 		</table>
+		<input type="text" id="input" value="dasdas">
+		
 	</div>
-
 	<script>
-		d3.selectAll("td").classed("selected",true);	//设置选中的所有<td>标签元素的背景色为橘黄色，字体颜色为白色
-	</script>
+		d3.selectAll('td').attr('like',
+		function(d,i){
+		  let s='';
+		  console.log(this);//当前元素     
+		  console.log(d);//当前元素绑定的数据
+		  console.log(i);//当前元素在选定集中的序数
+		  this.id=='test'?s='yes':s='No';//直接使用this.属性
+		  return s
+		  }
+		)
+		
+		d3.selectAll('td').on('click',function(){
+			console.log(d3.select(this).attr('id'))
+		})
+		d3.selectAll("#test").classed("selected",true);	//设置选中的所有<td>标签元素的背景色为橘黄色，字体颜色为白色
+			let width=400;
+			let height=400;
+			var svg=d3.select('body')
+						.append("svg")
+						.attr('width',width)
+						.attr('height',height)
+			svg.append('circle')
+			   .attr('cx',width/2).attr('cy',height/2).attr('r','50px')
+
+
+		d3.select('input').attr('value')
+	    console.log(d3.select('#input').attr('value','12das 3'))
+
+		let enter=d3.select('body').selectAll('#newP')
+		.data([2,2,3,4,5]).enter();
+
+		console.log(enter)
+		enter.append('p').attr('id','newP').text(function(d){return d;})
+
+
+		let update=d3.select('body').selectAll('#newP');
+		console.log(update)
+		let data11=[{a1:1},{a1:1},{a1:1},{a1:1},{a1:1}]
+		update
+		.data(data11)
+		.text(function(d){return d.a1})
+		.each(function(d){
+			d.a1+=1;
+			// console.log(d)
+		}).text(function(d,i){console.log(d);return d.a1})
+
+
+
+		// update
+		// .data([1,2,3,4,5])
+		// .text(function(d){return d})
+		// .each(function(d){
+		// 	d+=1;
+		// 	console.log(d)
+		// }).text(function(d,i){console.log(d);return d})
+		function learn(n){
+				console.log(n)
+				this.each(function(n,i){
+					console.log(n)
+					console.log(n.a1) 
+					n.a1=Math.floor(Math.random()*10000);
+				})
+				cldata(data11)
+				
+			}
+
+		function cldata(arr){
+			arr.sort(sor('a1'))
+				function sor(X){
+					return function(a,b){
+						var value1 = a[X];
+        				var value2 = b[X];
+					
+							return value2 - value1;	
+					}					
+				}
+				// console.log(data11)
+		}
+
+		update.call(learn).data(data11).text(function(n){return n.a1})
+
+		let number=[10,13,16,19,22,50,56];
+		let dataset=[{id:1001,color:'red'},{id:1003,color:'black'},{id:1005,color:'yellow'}]
+
+		update.data(number).text(function(n){return n})
+		let enter2=update.data(number).enter();
+		enter2.append('p').attr('id',"newQ").text(function(n){return n})
+
+		let P=d3.select('body').selectAll('#newP')                                                    
+		let Q=d3.select('body').selectAll('#newQ')
+
+		let map=d3.map(dataset,function(d){return d.id})
+
+		console.log(map.values())
+		console.log(map.keys())
+		console.log(map.get(1005).color)
+		console.log(typeof(+'11'))
+		// console.log(d3.range(6))
+		P.style('background',map.get(1003).color)
+
+		// console.log(d3.shuffle(number))
+
+		// update.sort(d3.ascending).text(function(n){return n.a1})
+		// d3.sort(update.attr)
+		// data11.sort(function(d){console.log(d);})
+		// .each(function(d,i){console.log(d.a1)})
+
+
+
+
+		{
+			let rectHeight=[10,30,60];
+			console.log(rectHeight.length)
+			let width=400,height=400,step=35,rectWidth=30,padding=5,color=d3.scale.category20();
+			let SVG2=d3.select('body').append('svg').attr('width',width).attr('height',height)
+			
+			let xScale=d3.scale.ordinal().domain(d3.range(rectHeight.length)).range([0,width-30]);
+			let yScale=d3.scale.linear().domain([0,100]).range([0,height-30]);
+			let xAxis=d3.svg.axis().scale(xScale).orient('bottom');
+			yScale.range([height-30,0]);
+			let yAxis=d3.svg.axis().scale(yScale).orient('left');
+			SVG2.append('g').call(xAxis).attr('transform','translate('+(+padding)+','+((height-padding)-30)+')');
+			SVG2.append('g').call(yAxis).attr('transform','translate('+(+padding+30)+',10)');
+		function draw(){
+			
+		let rect=SVG2.selectAll("rect").data(rectHeight) 
+		let enter=rect.enter(),exit=rect.exit();
+		enter
+		.append("rect").attr('x',function(d,i){
+						  return padding+xScale(i)
+					  })
+					 .attr('y',function(d,i){
+						 return height-yScale(d)-padding;
+					 })
+					 .attr('width',xScale.rangeBand())
+					 .attr('height',function(d){
+						 return yScale(d)
+					 })
+					 .attr('fill',function(d,i){
+						 return color(i);
+					 })
+		rect
+		.attr('x',function(d,i){
+						  return padding+i*step
+					  })
+					 .attr('y',function(d,i){
+						 return height-d-padding;
+					 })
+					 .attr('width',rectWidth)
+					 .attr('height',function(d){
+						 return d
+					 })
+					 .attr('fill',function(d,i){
+						 return color(i);
+					 })
+		exit
+		.remove();
+		let property={
+			'text-anchor':'middle',
+			'x':function(d,i){return padding+i*step},
+			'y':function(d,i){return height-d-padding},
+			'dx':rectWidth/2,
+			'dy':'-1rem',
+			}
+		let text=SVG2.selectAll('text').data(rectHeight)
+		let textEnter=text.enter(),textExit=text.exit();
+		textEnter
+					 .append('text')
+					 .attr(property)
+					 .text(function(d){
+						 return d
+					 });
+		text
+					 .attr(property)
+					 .text(function(d){
+						 console.log('???')
+						 console.log(d)
+						 return d
+					 });
+		textExit.remove();
+		
+		}
+		d3.select('body').append('button').text('排序').attr('onclick','mysort()');
+		d3.select('body').append('button').text('新增').attr('onclick','myadd()');
+		d3.select('body').append('button').text('删除').attr('onclick','mydel()');
+		draw()
+		function myadd(){
+			let value=0;
+			value=Math.floor(Math.random()*100)
+			rectHeight.push(value)
+			draw();
+		}
+		function mysort(){
+			rectHeight.sort(function(a,b){console.log(a,b)});
+			draw()
+		}
+		function mydel(){
+			rectHeight.pop()
+			draw()
+		}
+		}
+		
+		
+	</script>	
